@@ -1,0 +1,296 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+      <title>Ejemplos :: ExtJS</title>
+
+      <!-- EXTjs -->
+      <link rel="stylesheet" type="text/css" href="/ext-4.0.0/resources/css/ext-all.css">
+      <script type="text/javascript" src="/ext-4.0.0/bootstrap.js"></script>
+
+      <script type="text/javascript">
+
+         var NODE1;
+         var nodeCounter = 1;
+
+         Ext.onReady(function() {
+            sendByAjax = function(url,params) { //params={'name':'value',...}
+               ctrlAjax.start();
+               Ext.Ajax.request({
+                  url: url,
+                  success:function(a,b) {
+                     ctrlAjax.stop();
+                     eval("data="+a.responseText);
+                     if (data.code != "0") {
+                        Ext.Msg.show({
+                           title:'ERROR',
+                           msg: data.msg,
+                           buttons: Ext.Msg.OK,
+                           fn: function() { },
+                           animEl: 'elId',
+                           icon: Ext.MessageBox.WARNING
+                        });
+                     } else {
+                        if (data.msg=="SAVED") {
+                           Ext.Msg.alert("Guardada correctamente");
+                        }
+                        if (data.msg=="MAXID") {
+                           nodeCounter = data.maxId + 1;
+                        }
+                     }
+                  },
+                  params: params
+               });
+            }
+
+            ctrlAjax = {
+               bMask:false,
+               idLoad:null,
+               timeToWait: 20000, // 20 seg
+               mask: new Ext.LoadMask(Ext.getBody(), {msg:'Accion en progreso. Por favor espere...'}),
+               start:function(obj) {
+                  if (typeof(obj)=="undefined") obj = {};
+                  if (typeof(obj.useMask)=="undefined") obj.useMask = this.bMask;
+                  this.bMask = obj.useMask;
+                  if (this.bmask) this.mask.show();
+                  this.idLoad = setTimeout(function() {
+                     if (this.bMask) this.mask.hide();
+                     var msg = "TIEMPO DE ESPERA AGOTADO. ERROR CARGANDO DATOS";
+                     Ext.Msg.alert("ERROR",msg);
+                  },ctrlAjax.timeToWait);
+               },
+               stop: function() {
+                  clearTimeout(this.idLoad);
+                  if (this.bMask) this.mask.hide();
+               }
+            };
+
+            store = Ext.create('Ext.data.TreeStore', {
+               root: {
+                  expanded: true,
+                  children: []
+               },
+               proxy: {
+                  type: 'ajax',
+                  url: 'synctree.php',
+                  appendId: true,
+                  method:'GET'
+               }
+            });
+
+            addTreeChild = function() {
+               if (NODE1) {
+                  addChildFN(NODE1);
+               } else {
+                  addChildFN(myTree.getRootNode());
+               }
+            }
+
+            addChildFN = function(node) {
+               if (node.data.leaf) {
+                  node.data.leaf = null;
+               }
+               node.appendChild({ id:'PRUEBA_' + nodeCounter, text: 'PRUEBA_' + nodeCounter ,leaf:true });
+               node.expand();
+               nodeCounter++;
+            }
+
+            removeTreeChild = function() {
+               if (NODE1) {
+                  removeChildFN(NODE1);
+               } else {
+                  removeChildFN(myTree.getRootNode());
+               }
+            }
+
+            removeChildFN = function(node) {
+               var p = node.parentNode;
+               if (p) {
+                  p.removeChild(node);
+                  NODE1 = null;
+               }
+            }
+
+            getChildNodes = function(childNodes) {
+               var childObj = [], l = childNodes.length, i=0, cObj;
+               for (;i<l;i++) {
+                  childObj[i] = childNodes[i].data;
+                  childChildNodes = myTree.store.getNodeById(childObj[i].id).childNodes
+                  if (childChildNodes.length > 0) {
+                     var childChild = getChildNodes(childChildNodes);
+                     childObj[i].children = childChild;
+                  }
+               }
+               return childObj;
+            }
+
+            saveTree = function(tplName) {
+               /*var records = myTree.getView().getChecked(), names = [];
+               Ext.Array.each(records, function(rec){
+                   names.push(rec.get('text'));
+               });*/
+               //myTree.store.proxy.extraParams = { tplname: tplName}
+               //myTree.store.sync();
+
+
+               var childNodes = myTree.store.getRootNode().childNodes;
+               var childObj = getChildNodes(childNodes);
+               sendByAjax("synctree.php",{tplname:tplName, tree:Ext.JSON.encode(childObj)});
+            }
+
+            loadTree = function(tplName) {
+               sendByAjax("synctree.php",{tplname:tplName,maxid:"true"});
+               myTree.store.load({params:{tplname:tplName}});
+            }
+
+            myWindow = Ext.create("Ext.Window",
+            {
+                title: 'Edit Node',
+                height: 200,
+                width: 400,
+                closeAction:'hide',
+                layout: 'fit',
+                items: [  // Let's put an empty grid in just to illustrate fit layout
+                  {  xtype:'form',
+                     layout: 'anchor',
+                     defaults: {
+                        anchor: '100%',
+                        margin:5
+                     },
+
+                     // The fields
+                     defaultType: 'textfield',
+                     items:[
+                        { id:'nodeVal', fieldLabel:'Nombre' }
+                     ],
+                     buttons: [
+                        {
+                           text: 'Save',
+                           handler: function() {
+                              if (Ext.getCmp("nodeVal").getValue()!="") {
+                                 NODE1.data.text = Ext.getCmp("nodeVal").getValue();
+                                 NODE1.setId(Ext.getCmp("nodeVal").getValue());
+                                 myWindow.hide();
+                              }
+                           }
+                        }
+                     ]
+                  }
+                ]
+            });
+
+
+            myWindow2 = Ext.create("Ext.Window",
+            {
+                title: 'Tree',
+                height: 200,
+                width: 400,
+                closeAction:'hide',
+                layout: 'fit',
+                items: [  // Let's put an empty grid in just to illustrate fit layout
+                  {  xtype:'form',
+                     layout: 'anchor',
+                     defaults: { anchor: '100%', margin:5 },
+                     defaultType: 'textfield',
+                     items:[
+                        { id:'treename', fieldLabel:'Nombre de la plantilla' }
+                     ],
+                     buttons: [
+                        {
+                           id:'loadBtn',
+                           text: 'Load',
+                           hidden:true,
+                           handler: function() {
+                              if (Ext.getCmp("treename").getValue()!="") {
+                                 myWindow2.hide();
+                                 loadTree(Ext.getCmp("treename").getValue());
+                              }
+                           }
+                        },
+                        {
+                           id:'saveBtn',
+                           text: 'Save',
+                           hidden:true,
+                           handler: function() {
+                              if (Ext.getCmp("treename").getValue()!="") {
+                                 myWindow2.hide();
+                                 saveTree(Ext.getCmp("treename").getValue());
+                              }
+                           }
+                        }
+                     ]
+                  }
+                ]
+            });
+
+            editTreeChild = function() {
+               if (NODE1) {
+                  Ext.getCmp("nodeVal").setValue(NODE1.data.text);
+                  myWindow.show();
+               }
+            }
+
+            myTree = Ext.create('Ext.tree.Panel', {
+               title: 'Ejemplo de Arbol dinamico <span style="font-family:Verdana; font-size:8px!important; color:#F60; font-weight:bold;">by @manufosela</span>',
+               //width: 550,
+               //height:700,
+               store: store,
+               rootVisible: false,
+               layout:'fit',
+               storeId: 'elementsStoreId',
+               viewConfig: {
+                  plugins: {
+                     ptype: 'treeviewdragdrop'
+                  }
+               },dockedItems: [{
+                  xtype: 'toolbar',
+                  items: [
+                     {
+                        text: 'Expand All',
+                        handler: function(){
+                           myTree.expandAll();
+                        }
+                     }, {
+                        text: 'Collapse All',
+                        handler: function(){
+                           myTree.collapseAll();
+                        }
+                     }, {
+                        text:"NODE",
+                        menu:[
+                           { text:'Add NODE', handler: addTreeChild },
+                           { text:'Remove NODE', handler: removeTreeChild },
+                           { text:'Edit NODE', handler: editTreeChild },
+                        ]
+                     }, {
+                        text:"TREE",
+                        menu:[
+                           { text:'Save TREE', handler: function() { myWindow2.setTitle("Save Tree"); Ext.getCmp("saveBtn").setVisible(true); Ext.getCmp("loadBtn").setVisible(false); myWindow2.show(); } },
+                           { text:'Load TREE', handler: function() { myWindow2.setTitle("Load Tree"); Ext.getCmp("loadBtn").setVisible(true); Ext.getCmp("saveBtn").setVisible(false); myWindow2.show(); } }
+                        ]
+                     }
+                  ]
+              }]
+            });
+
+            myTree.on("itemclick",function(view,model,item,index) {
+               //Ext.Msg.alert("item clicked","SOY "+model.data.text+", index: "+index);
+               NODE1 = model;
+            });
+
+            myViewport = Ext.create('Ext.container.Viewport',{
+               id:'the_view',
+               layout:'fit',
+               items:[
+                  myTree
+               ]
+            });
+
+
+
+
+         });
+      </script>
+   </head>
+
+   <body></body>
+</html>

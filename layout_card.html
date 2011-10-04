@@ -1,0 +1,67 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+      <title>ExtJS :: layout Card</title>
+
+      <!-- EXTjs -->
+      <link rel="stylesheet" type="text/css" href="/ext-4.0.0/resources/css/ext-all.css">
+      <script type="text/javascript" src="/ext-4.0.0/bootstrap.js"></script>
+
+      <script type="text/javascript">
+         Ext.ns("Ejemplo");
+
+         Ext.onReady(function() {
+            var cardNav = function(incr){
+                 var l = Ext.getCmp('card-wizard-panel').getLayout();
+                 var i = l.activeItem.id.split('card-')[1];
+                 var next = parseInt(i, 10) + incr;
+                 l.setActiveItem(next);
+                 Ext.getCmp('card-prev').setDisabled(next===0);
+                 Ext.getCmp('card-next').setDisabled(next===2);
+             };
+
+            cardWizard = Ext.create("Ext.panel.Panel", {
+               id:'card-wizard-panel',
+               title: 'Card Layout (Wizard)',
+               layout:'card',
+               activeItem: 0,
+               bodyStyle: 'padding:15px',
+               defaults: {border:false},
+               bbar: ['->', {
+                   id: 'card-prev',
+                   text: '&laquo; Previous',
+                   handler: Ext.Function.bind(cardNav, this, [-1]),
+                   disabled: true
+               },{
+                   id: 'card-next',
+                   text: 'Next &raquo;',
+                   handler: Ext.Function.bind(cardNav, this, [1])
+               }],
+               items: [{
+                   id: 'card-0',
+                   html: '<h1>Welcome to the Demo Wizard!</h1><p>Step 1 of 3</p><p>Please click the "Next" button to continue...</p>'
+               },{
+                   id: 'card-1',
+                   html: '<p>Step 2 of 3</p><p>Almost there.  Please click the "Next" button to continue...</p>'
+               },{
+                   id: 'card-2',
+                   html: '<h1>Congratulations!</h1><p>Step 3 of 3 - Complete</p>'
+               }]
+            });
+
+            myViewport = Ext.create('Ext.container.Viewport',{
+               id:'the_view',
+               //layout:'fit',
+               items:[
+                  cardWizard
+               ]
+            });
+
+         });
+
+      </script>
+   </head>
+
+   <body>
+   </body>
+</html>

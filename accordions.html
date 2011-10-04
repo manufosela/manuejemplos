@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <title>Ext 4 - Accordion example</title>
+
+      <!-- ** CSS ** -->
+      <link rel="stylesheet" type="text/css" href="/ext-4.0.0/resources/css/ext-all.css" />
+      <style>
+         .empty .x-panel-body {
+            padding-top:20px;
+            text-align:center;
+            font-style:italic;
+            color: gray;
+            font-size:11px;
+         }         
+      </style>      
+
+      <!-- ExtJS -->
+      <script type="text/javascript" src="/ext-4.0.0/bootstrap.js"></script>
+
+      <script type="text/javascript">
+         Ext.require(['*']);
+
+         Ext.onReady(function(){
+            var item1 = Ext.create('Ext.Panel', {
+                title: 'Accordion Item 1',
+                html: '&lt;empty panel&gt;',
+                cls:'empty'
+            });
+         
+            var item2 = Ext.create('Ext.Panel', {
+                title: 'Accordion Item 2',
+                html: '&lt;empty panel&gt;',
+                cls:'empty'
+            });
+
+            var item3 = Ext.create('Ext.Panel', {
+                title: 'Accordion Item 3',
+                html: '&lt;empty panel&gt;',
+                cls:'empty'
+            });
+
+            var item4 = Ext.create('Ext.Panel', {
+                title: 'Accordion Item 4',
+                html: '&lt;empty panel&gt;',
+                cls:'empty'
+            });
+
+            var item5 = Ext.create('Ext.Panel', {
+                title: 'Accordion Item 5',
+                html: '&lt;empty panel&gt;',
+                cls:'empty'
+            });
+
+            designPanel = Ext.create('Ext.Panel',{
+               layout:'auto',
+               region:'center',
+               title:'Design Panel',
+               margins:'5',
+               defaults: {
+                    // applied to each contained panel
+                    bodyStyle: 'padding:15px'
+                },
+                layoutConfig: {
+                    // layout-specific configs go here
+                    titleCollapse: false,
+                    animate: true,
+                    activeOnTop: true
+                },
+                //height:window.innerHeight,                
+                split:true,
+                items:[]
+            });
+
+            var accordion = Ext.create('Ext.Panel', {
+               layout:'accordion',
+               region:'center',
+               margins:'5',
+               defaults: {
+                    // applied to each contained panel
+                    bodyStyle: 'padding:15px'
+                },
+                layoutConfig: {
+                    // layout-specific configs go here
+                    titleCollapse: false,
+                    animate: true,
+                    activeOnTop: true
+                },
+                //height:window.innerHeight,                
+                split:true,
+                items: [item1, item2, item3, item4, item5]
+            });
+
+            Ext.define('ElementsProperties', {
+               extend: 'Ext.data.Model',
+               fields: [
+                  {name: 'property', type: 'string'},
+                  {name: 'value',  type: 'string'}
+               ]
+            });
+
+            propertiesStore = new Ext.data.Store({ 
+               model: 'ElementsProperties',
+               proxy: {
+                 type: 'ajax',
+                 url : '/loadproperties.php',
+                 reader: {
+                     type: 'json',
+                     root: 'properties'
+                 }
+               }
+            });
+            
+            var viewport = Ext.create('Ext.Viewport', {
+               layout:'border',
+               margin:0,
+               items:[
+                  {
+                     layout:'vbox',
+                     region:'west',
+                     margins:'5',
+                     width: 200,
+                     bodyStyle:'background:#f1f1f1',
+                     items:[
+                        {
+                           xtype:'panel',
+                           layout:'vbox',
+                           title:'Elements',
+                           cls:'empty',
+                           height:(window.innerHeight/2),
+                           items:[
+                              { id:'btn-add-header', xtype:'button', text:'Header', width:180, margin:'0 5' },
+                              { id:'btn-add-footer', xtype:'button', text:'Footer', width:180, margin:'0 5' },
+                              { id:'btn-add-accordion', xtype:'button', text:'Accordion', width:180, margin:'0 5' },
+                              { id:'btn-add-carousel', xtype:'button', text:'Carousel', width:180, margin:'0 5' },
+                           ]
+                        },
+                        {
+                           xtype:'grid',
+                           store: propertiesStore,
+                           stateful: true,
+                           //stateId: 'stateGrid',
+                           columns: [
+                              {
+                                 text     : 'Property',
+                                 flex     : 1,
+                                 sortable : true,
+                                 dataIndex: 'property'
+                              },
+                              {
+                                 text     : 'Value',
+                                 width    : 100,
+                                 sortable : true,
+                                 dataIndex: 'value'
+                              }
+                           ],
+                           height: window.innerHeight,
+                           width: 200,
+                           title: 'Config',
+//                           renderTo: 'grid-example',
+                           viewConfig: {
+                              stripeRows: true
+                           }
+                        }
+                     ]
+                  },
+                  designPanel
+               ]
+            });         
+         });
+      </script>
+   </head>
+   
+   <body>
+   </body>
+</html>   

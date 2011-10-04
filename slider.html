@@ -1,0 +1,35 @@
+<html>
+   <head>
+      <link rel="stylesheet" type="text/css" href="/ext-3.1.1/resources/css/ext-all.css" />
+      <script type="text/javascript" src="/ext-3.1.1/adapter/ext/ext-base.js"></script>
+      <script type="text/javascript" src="/ext-3.1.1/ext-all.js"></script>
+      <script type="text/javascript" src="/ext-3.1.1/examples/ux/SliderTip.js"></script>
+      <script type="text/javascript">
+         /*!
+          * Ext JS Library 3.0.0
+          * Copyright(c) 2006-2009 Ext JS, LLC
+          * licensing@extjs.com
+          * http://www.extjs.com/license
+          */
+         Ext.onReady(function(){
+             slider = new Ext.Slider({
+                 renderTo: 'basic-slider',
+                 width: 214,
+                 minValue: 0,
+                 maxValue: 100
+             });
+             slider.on( 'change', function(v) {
+               Ext.getDOM('basic-slider').
+               Ext.get('output').update('Changed: ' + v.value );
+             });
+         }
+      </script>
+   </head>
+   <body>
+      <div id="output" class="testclass">output</div>
+      <h1>Ext Slider Example</h1>
+      <p>Sliders support keyboard adjustments, configurable snapping, axis clicking and animation.</p>
+      <h3>Basic Slider</h3>
+      <div id="basic-slider"></div>
+   </body>
+</html>

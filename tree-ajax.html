@@ -1,0 +1,74 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+      <title>Ejemplos :: ExtJS</title>
+
+      <!-- EXTjs -->
+      <link rel="stylesheet" type="text/css" href="/ext-4.0.0/resources/css/ext-all.css">
+      <script type="text/javascript" src="/ext-4.0.0/bootstrap.js"></script>
+
+      <script type="text/javascript">
+
+         Ext.onReady(function() {
+
+            Ext.QuickTips.init();
+
+            var store = Ext.create('Ext.data.TreeStore', {
+              proxy: {
+                  type: 'ajax',
+                  url: 'gettreenodes.json'
+              },
+              root: {
+                  text: 'Ext JS',
+                  id: 'src',
+                  expanded: true
+              },
+              folderSort: true,
+              sorters: [{
+                  property: 'text',
+                  direction: 'ASC'
+              }]
+            });
+
+            myTree =  Ext.create('Ext.tree.Panel', {
+              store: store,
+              viewConfig: {
+                  plugins: {
+                      ptype: 'treeviewdragdrop'
+                  }
+              },
+              height: 500,
+              width: 350,
+              title: 'Files',
+              useArrows: true,
+              dockedItems: [{
+                  xtype: 'toolbar',
+                  items: [{
+                      text: 'Expand All',
+                      handler: function(){
+                          tree.expandAll();
+                      }
+                  }, {
+                      text: 'Collapse All',
+                      handler: function(){
+                          tree.collapseAll();
+                      }
+                  }]
+              }]
+            });
+
+            myViewport = Ext.create('Ext.container.Viewport',{
+               id:'the_view',
+               layout:'fit',
+               items:[myTree]
+            });
+
+
+
+
+         });
+      </script>
+   </head>
+
+   <body></body>
+</html>

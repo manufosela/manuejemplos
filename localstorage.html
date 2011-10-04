@@ -1,0 +1,113 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+      <title>Local Storage</title>
+
+      <!-- EXTjs -->
+      <link rel="stylesheet" type="text/css" href="/ext-4.0.0/resources/css/ext-all.css">
+      <script type="text/javascript" src="/ext-4.0.0/bootstrap.js"></script>
+
+      <script type="text/javascript">
+         /*
+
+         COMANDOS DE LOCALSTORAGE
+
+         window.localStorage.removeItem(key);
+         window.localStorage.setItem(key, value);
+         var value = window.localStorage.getItem(key);
+         window.localStorage.clear();
+
+         */
+
+
+         Ext.ns("Ejemplo");
+
+         Ejemplo.App = {
+            init: function() {
+               Ejemplo.formulario = Ext.create('Ext.form.Panel', {
+                  title: 'Formulario para localStorage',
+                  bodyPadding: 5,
+                  width: 350,
+                  url: 'save-form.php',
+                  // Fields will be arranged vertically, stretched to full width
+                  layout: 'anchor',
+                  defaults: {
+                     anchor: '100%'
+                  },
+
+                  // The fields
+                  defaultType: 'textfield',
+                  items: [
+                     {
+                        id:'first',
+                        fieldLabel: 'First Name',
+                        name: 'first',
+                        allowBlank: false,
+                        value:localStorage.getItem("First_Name"),
+                        listeners:{
+                           keyup:{
+                              element: 'el', //bind to the underlying el property on the panel
+                              fn:function(a) {
+                                 localStorage.setItem("First_Name",Ext.getCmp("first").getValue());
+                              }
+                           }
+                        }
+                     },{
+                        id:'last',
+                        fieldLabel: 'Last Name',
+                        name: 'last',
+                        allowBlank: false,
+                        value:localStorage.getItem("Last_Name"),
+                        listeners:{
+                           keyup:{
+                              element: 'el', //bind to the underlying el property on the panel
+                              fn:function(a) {
+                                 localStorage.setItem("Last_Name",Ext.getCmp("last").getValue());
+                              }
+                           }
+                        }
+                     },{
+                        xtype:'label',
+                        text:'Prueba a rellenar los campos, cerrar la pagina y volverla a abrir...'
+                     }
+                  ],buttons: [
+                     {
+                        text: 'Reset',
+                        handler: function() {
+                           localStorage.setItem("First_Name","");
+                           localStorage.setItem("Last_Name","");
+                           Ext.getCmp("first").setValue("");
+                           Ext.getCmp("last").setValue("");
+                        }
+                     }
+                  ],
+                  renderTo: Ext.getBody()
+               });
+
+
+               Ext.getCmp("first").addListener('keypress',function(a) {
+                  localStorage.setItem("First_Name",Ext.getCmp("first").getValue());
+               });
+
+            }
+         }
+
+         Ext.onReady(Ejemplo.App.init,Ejemplo.App);
+      </script>
+   </head>
+
+   <body>
+      <div style="font-size:12px!important; font-family:Verdana,Arial">
+         <h1>COMANDOS DE LOCALSTORAGE</h2>
+         <ul>
+            <li>window.localStorage.removeItem(key);</li>
+            <li>window.localStorage.setItem(key, value);</li>
+            <li>var value = window.localStorage.getItem(key);</li>
+            <li>window.localStorage.clear();</li>
+         </ul>
+      </div><br>
+      <p>
+         <h1 style="font-size:12px!important; font-family:Verdana,Arial">Ejemplo, que segun escribes en el formulario va guardando el valor en localStorage</h1>
+      </p><br>
+   </body>
+</html>

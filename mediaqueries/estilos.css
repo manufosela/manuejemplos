@@ -1,0 +1,109 @@
+*{
+    margin:0;
+    padding:0;
+}
+
+body{
+    background:#f5f5f5;
+    font-family: Arial, sans-serif;
+    font-size:13px;
+    line-height:1.6em;
+    color:#444;
+}
+
+p{
+   margin:15px 0;
+}
+
+h2{
+   margin-top:20px;
+}
+
+#container{
+    background:#fff;
+    border-left:1px #ddd solid;
+    border-right:1px #ddd solid;
+    border-bottom:1px #ddd solid;
+    width:600px;
+    margin:0 auto;
+    font-size:12px;
+    font-family:Verdana,Arial;
+}
+
+header h1 a{
+   text-indent:-9999px;
+   display:block;
+   width:600px;
+   height:98px;
+   background:url(image-med.jpg) no-repeat 50% 0;
+}
+
+#content{
+   padding:0 15px;
+}
+
+footer{
+   text-align:center;
+   width:100%;
+   display:block;
+   font-size:11px;
+}
+
+img {
+   max-width:570px;
+}
+
+
+/* MEDIA QUERIES PART */
+
+/*ESTA PARA PANTALLAS */
+@media screen and (min-width:1000px){
+   img {
+      max-width:1000px;
+   }
+
+   #container{
+      width:1100px;
+      font-size:18px;
+      line-height:22px;
+   }
+
+   header h1 a{
+      width:1100px;
+      height:180px;
+      background:url(image.jpg) no-repeat 0 0;
+   }
+}
+
+/* ESTA PARA MOVILES DISPLAY GRANDE O PANTALLAS RESOLUCIONES BAJAS */
+@media screen and (max-width:600px){
+   img {
+      max-width:290px;
+   }
+
+   #container{
+      width:auto;
+   }
+
+   header h1 a{
+      width:auto;
+      background:url(image-med.jpg) no-repeat 0 0;
+   }
+}
+
+/* ESTA PARA MOVILES DISPLAY PEQUEÑO */
+@media screen and (max-width:320px){
+   img {
+      max-width:200px;
+   }
+
+   #container{
+      width:auto;
+   }
+
+   header h1 a{
+      width:auto;
+      height:52px;
+      background:url(image-peq.jpg) no-repeat 50% 0;
+   }
+}

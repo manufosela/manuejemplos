@@ -1,0 +1,54 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+      <title>Ejemplos :: ExtJS</title>
+
+      <!-- EXTjs -->
+      <link rel="stylesheet" type="text/css" href="/ext-4.0.0/resources/css/ext-all.css">
+      <script type="text/javascript" src="/ext-4.0.0/bootstrap.js"></script>
+
+      <script type="text/javascript">
+
+         Ext.onReady(function() {
+
+            store = Ext.create('Ext.data.TreeStore', {
+                root: {
+                    expanded: true,
+                    children: [
+                        { text: "detention", leaf: true },
+                        { text: "homework", expanded: true, children: [
+                            { text: "book report", leaf: true },
+                            { text: "alegrbra", leaf: true}
+                        ] },
+                        { text: "buy lottery tickets", leaf: true }
+                    ]
+                }
+            });
+
+            myTree = Ext.create('Ext.tree.Panel', {
+                title: 'Simple Tree',
+                width: 200,
+                height: 150,
+                store: store,
+                rootVisible: false,
+            });
+
+            myTree.on("itemclick",function(view,model,item,index) {
+               Ext.Msg.alert("item clicked","SOY "+model.data.text+", index: "+index);
+            });
+
+            myViewport = Ext.create('Ext.container.Viewport',{
+               id:'the_view',
+               layout:'fit',
+               items:[myTree]
+            });
+
+
+
+
+         });
+      </script>
+   </head>
+
+   <body></body>
+</html>
